@@ -34,6 +34,10 @@ public class UserService {
 	}
 
 	public User updateUser(User user) {
-		return userRepository.save(user);
+		User userFromDb = userRepository.findByEmail(user.getEmail());
+		user.setPassword(userFromDb.getPassword());
+		User savedUser=userRepository.save(user);
+		savedUser.setPassword("**Not Available**");
+		return savedUser;
 	}
 }
