@@ -1,16 +1,12 @@
 package com.care.server.services;
 
-import com.care.server.models.seeker.SeekerEducation;
-import com.care.server.models.seeker.SeekerProfessional;
-import com.care.server.repo.seeker.SeekerEducationRepository;
-import com.care.server.repo.seeker.SeekerProfessionalRepository;
+import com.care.server.models.seeker.*;
+import com.care.server.repo.seeker.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.care.server.models.User;
-import com.care.server.models.seeker.SeekerContact;
 import com.care.server.repo.UserRepository;
-import com.care.server.repo.seeker.SeekerContactRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +22,14 @@ public class SeekerSeervice {
 	private SeekerProfessionalRepository seekerProfessionalRepository;
 	@Autowired
 	private SeekerEducationRepository seekerEducationRepository;
+	@Autowired
+	private SeekerCertificationRepository seekerCertificationRepository;
+	@Autowired
+	public SeekerAchievementRepository seekerAchievementRepository;
+	@Autowired
+	public SeekerPersonalRepository seekerPersonalRepository;
+	@Autowired
+	public SeekerSummaryRepository seekerSummaryRepository;
 
 	public SeekerContact getContact(String email) {
 		System.out.println("Email : " + email);
@@ -117,5 +121,86 @@ public class SeekerSeervice {
 			seekerEducation.getUser().setPassword("**Not Available**");
 		});
 		return  seekerEducations;
+	}
+	public List<SeekerCertification> fetchCertificationData(String email){
+		User user=userRepository.findByEmail(email);
+		List<SeekerCertification> seekerCertifications = seekerCertificationRepository.findByUser(user);
+		seekerCertifications.forEach(seekerCertification -> {
+			seekerCertification.getUser().setPassword("**Not Available**");
+		});
+		return seekerCertifications;
+	}
+	public boolean addCertification(SeekerCertification seekerCertification, String email){
+		User user=userRepository.findByEmail(email);
+		seekerCertification.setUser(user);
+		seekerCertificationRepository.save(seekerCertification);
+		return true;
+	}
+	public boolean deleteCertification(long id,String email){
+		User user=userRepository.findByEmail(email);
+		SeekerCertification seekerCertification = seekerCertificationRepository.findById(id).get();
+		if(user.getId()==seekerCertification.getUser().getId()){
+			seekerCertificationRepository.delete(seekerCertification);
+			return true;
+		}
+		else
+			return false;
+	}
+	public List<SeekerAchievment> fetchAchievements(String email){
+		User user=userRepository.findByEmail(email);
+		List<SeekerAchievment> seekerAchievments = seekerAchievementRepository.findByUser(user);
+		seekerAchievments.forEach(seekerAchievment -> {
+			seekerAchievment.getUser().setPassword("**Not AVailable**");
+		});
+		return seekerAchievments;
+	}
+	public boolean addAchievement(SeekerAchievment seekerAchievment,String email){
+		User user=userRepository.findByEmail(email);
+		seekerAchievment.setUser(user);
+		seekerAchievementRepository.save(seekerAchievment);
+		return  true;
+	}
+	public boolean deleteAchievement(long id,String email){
+		User user=userRepository.findByEmail(email);
+		SeekerAchievment seekerAchievment = seekerAchievementRepository.findById(id).get();
+		if(user.getId()==seekerAchievment.getUser().getId()){
+			seekerAchievementRepository.delete(seekerAchievment);
+			return true;
+		}
+		else
+			return false;
+	}
+	public SeekerPersonal fetchPersonalData(String email){
+		User user=userRepository.findByEmail(email);
+		SeekerPersonal seekerPersonal = seekerPersonalRepository.findByUser(user);
+		seekerPersonal.getUser().setPassword("**Not Available**");
+		return seekerPersonal;
+	}
+	public boolean updatePersonalData(SeekerPersonal seekerPersonal,String email){
+		User user=userRepository.findByEmail(email);
+
+		SeekerPersonal seekerPersonalFromDb = seekerPersonalRepository.findByUser(user);
+		if(seekerPersonalFromDb!=null)
+			seekerPersonal.setId(seekerPersonalFromDb.getId());
+		else
+			seekerPersonal.setUser(user);
+		seekerPersonalRepository.save(seekerPersonal);
+		return true;
+	}
+	public SeekerSummary fetchSummary(String email){
+		User user=userRepository.findByEmail(email);
+		SeekerSummary seekerSummary = seekerSummaryRepository.findByUser(user);
+		seekerSummary.getUser().setPassword("**Not Available**");
+		return seekerSummary;
+	}
+	public boolean updateSummary(SeekerSummary seekerSummary,String email){
+		User user=userRepository.findByEmail(email);
+		SeekerSummary seekerSummaryFromDb = seekerSummaryRepository.findByUser(user);
+		if(seekerSummaryFromDb!=null)
+			seekerSummary.setId(seekerSummaryFromDb.getId());
+		else
+			seekerSummary.setUser(user);
+		seekerSummaryRepository.save(seekerSummary);
+		return true;
 	}
 }

@@ -16,8 +16,7 @@ public class SeekerAchievment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @ElementCollection
-    private List<String> achievements;
+    private String achievements;
     @OneToOne
     private User user;
 }

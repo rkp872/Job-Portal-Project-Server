@@ -18,7 +18,7 @@ public class SeekerCertification {
     private long id;
     private String certTitle;
     private String issuer;
-    private Date date;
+    private String date;
     private String description;
     @OneToOne
     private User user;

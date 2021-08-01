@@ -19,10 +19,10 @@ public class SeekerPersonal {
     private long id;
     private String fatherName;
     private String motherName;
-    private Date dob;
+    private String dob;
     private String languageKnown;
     private String hobby;
-    private boolean relocation;
+    private String relocation;
     private String aadharNumber;
     private String panNumber;
     @OneToOne

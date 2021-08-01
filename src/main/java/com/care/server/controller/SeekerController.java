@@ -1,8 +1,6 @@
 package com.care.server.controller;
 
-import com.care.server.models.seeker.SeekerContact;
-import com.care.server.models.seeker.SeekerEducation;
-import com.care.server.models.seeker.SeekerProfessional;
+import com.care.server.models.seeker.*;
 import com.care.server.services.SeekerSeervice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +56,55 @@ public class SeekerController {
     @GetMapping("/get-education")
     public List<SeekerEducation> fetchEducationData(Principal principal){
         return seekerSeervice.getEducationData(principal.getName() );
+    }
+    @PostMapping("/add-certification")
+    public String addCertification(@RequestBody SeekerCertification seekerCertification,Principal principal){
+        if(seekerSeervice.addCertification(seekerCertification,principal.getName())) return "Added";
+        else return "Server error";
+    }
+    @GetMapping("/delete-certification/{id}")
+    public String deleteCertification(@PathVariable("id") long id, Principal principal){
+        if(seekerSeervice.deleteCertification(id,principal.getName())) return "Deleted";
+        else return "Invalid request";
+    }
+    @GetMapping("/get-certification")
+    public List<SeekerCertification> getCertificates(Principal principal){
+        return seekerSeervice.fetchCertificationData(principal.getName());
+    }
+    @GetMapping("/get-achievements")
+    public List<SeekerAchievment> fetchAchievement(Principal principal){
+        return seekerSeervice.fetchAchievements(principal.getName());
+    }
+    @PostMapping("/add-achievement")
+    public String addAchievement(@RequestBody SeekerAchievment seekerAchievment,Principal principal){
+        if(seekerSeervice.addAchievement(seekerAchievment,principal.getName())){
+            return "Added";
+        }
+        else
+            return "Server Error";
+    }
+    @GetMapping("/delete-achievement/{id}")
+    public String deleteAchievement(@PathVariable("id") long id,Principal principal){
+        if(seekerSeervice.deleteAchievement(id,principal.getName())) return "Deleted";
+        else return "Invalid request";
+    }
+    @GetMapping("/get-personal")
+    public SeekerPersonal fetchPersonalData(Principal principal){
+        return seekerSeervice.fetchPersonalData(principal.getName());
+    }
+    @PostMapping("/update-personal")
+    public String updatePersonalData(@RequestBody SeekerPersonal seekerPersonal, Principal principal){
+        seekerSeervice.updatePersonalData(seekerPersonal,principal.getName());
+        return "Updated";
+    }
+    @GetMapping("/get-summary")
+    public SeekerSummary fetchSummary(Principal principal){
+        return seekerSeervice.fetchSummary(principal.getName());
+    }
+    @PostMapping("/update-summary")
+    public String updateSummary(@RequestBody SeekerSummary seekerSummary,Principal principal){
+        if(seekerSeervice.updateSummary(seekerSummary,principal.getName())) return "Updated";
+        else
+            return "Invalid Request";
     }
 }
