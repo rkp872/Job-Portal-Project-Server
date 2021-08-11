@@ -1,6 +1,12 @@
 package com.care.server.services;
 
+import com.care.server.models.AppliedJob;
+import com.care.server.models.employer.NewJob;
+import com.care.server.models.employer.SelectCandidate;
 import com.care.server.models.seeker.*;
+import com.care.server.repo.AppliedJobRepository;
+import com.care.server.repo.employer.NewJobRepository;
+import com.care.server.repo.employer.SelectCandidateRepository;
 import com.care.server.repo.seeker.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.care.server.models.User;
 import com.care.server.repo.UserRepository;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +37,12 @@ public class SeekerSeervice {
 	public SeekerPersonalRepository seekerPersonalRepository;
 	@Autowired
 	public SeekerSummaryRepository seekerSummaryRepository;
+	@Autowired
+	private NewJobRepository newJobRepository;
+	@Autowired
+	private AppliedJobRepository appliedJobRepository;
+	@Autowired
+	private SelectCandidateRepository selectCandidateRepository;
 
 	public SeekerContact getContact(String email) {
 		System.out.println("Email : " + email);
@@ -202,5 +215,36 @@ public class SeekerSeervice {
 			seekerSummary.setUser(user);
 		seekerSummaryRepository.save(seekerSummary);
 		return true;
+	}
+	public List<NewJob> getRecommendedJobs(){
+		return newJobRepository.findAll();
+	}
+	public boolean applyToJob(long jobId, String email){
+		User user=userRepository.findByEmail(email);
+		NewJob job=newJobRepository.findById(jobId).get();
+		if(appliedJobRepository.findByNewJobAndUser(job,user)!=null)
+			return false;
+		AppliedJob appliedJob=new AppliedJob();
+		appliedJob.setNewJob(job);
+		appliedJob.setUser(user);
+		appliedJobRepository.save(appliedJob);
+		return true;
+	}
+	public int numberOfApplicants(long jobId){
+		NewJob newJob = newJobRepository.findById(jobId).get();
+		int numberOfApplicants = appliedJobRepository.countByNewJob(newJob);
+		return numberOfApplicants;
+	}
+	public List<NewJob> getSelectedJob(String email){
+		User user=userRepository.findByEmail(email);
+		List<SelectCandidate> selectedJobs=selectCandidateRepository.findByUser(user);
+		if(selectedJobs==null){
+			return null;
+		}
+		ArrayList<NewJob> newJobs=new ArrayList<NewJob>();
+		selectedJobs.forEach(selectCandidate -> {
+			newJobs.add(selectCandidate.getNewJob());
+		});
+		return newJobs;
 	}
 }

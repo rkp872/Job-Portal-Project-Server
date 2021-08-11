@@ -1,5 +1,6 @@
 package com.care.server.controller;
 
+import com.care.server.models.employer.NewJob;
 import com.care.server.models.seeker.*;
 import com.care.server.services.SeekerSeervice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,5 +107,22 @@ public class SeekerController {
         if(seekerSeervice.updateSummary(seekerSummary,principal.getName())) return "Updated";
         else
             return "Invalid Request";
+    }
+    @GetMapping("/get-recommendedjobs")
+    public List<NewJob> getRecommendedJobs(){
+        return seekerSeervice.getRecommendedJobs();
+    }
+    @GetMapping("/apply-job/{id}")
+    public String applyToJob(@PathVariable("id") long id,Principal principal){
+        if(seekerSeervice.applyToJob(id,principal.getName())) return "You Applied For This Job Successfully";
+        else return "You Already Applied For This Job";
+    }
+    @GetMapping("/numberof-applicants/{id}")
+    public int getNumOfApplicants(@PathVariable("id") long id){
+        return seekerSeervice.numberOfApplicants(id);
+    }
+    @GetMapping("/selected-jobs")
+    public List<NewJob> getSelectedJob(Principal principal){
+        return seekerSeervice.getSelectedJob(principal.getName());
     }
 }
